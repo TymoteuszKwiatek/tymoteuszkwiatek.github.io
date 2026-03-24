@@ -4,73 +4,149 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Moja Strona 🌿</title>
+
 <style>
-body { margin:0; font-family:Arial,sans-serif; background:#121a12; color:#c7f0c7; }
-header { background:#1b451b; padding:20px; text-align:center; }
-header h1 { margin:0; color:#7fff7f; }
-nav { display:flex; justify-content:center; background:#1a2b1a; padding:5px; }
-nav a { padding:10px 15px; color:#c7f0c7; text-decoration:none; transition:.3s; }
-nav a:hover { background:#225522; }
-section { max-width:900px; margin:20px auto; padding:20px; background:#1c2a1c; border-radius:10px; box-shadow:0 4px 6px rgba(0,0,0,.5); }
-h2 { color:#7fff7f; margin-top:0; }
-.cards-container { display:flex; overflow-x:auto; gap:10px; padding-bottom:10px; }
-.card { flex:0 0 auto; padding:10px 15px; background:#254225; border-radius:8px; cursor:pointer; color:#a0ffa0; transition:.3s; white-space:nowrap; }
-.card:hover { background:#3a7d3a; }
-.search-box { width:100%; padding:8px; margin-bottom:15px; border-radius:5px; border:none; font-size:1em; }
-footer { text-align:center; padding:10px; background:#1a2b1a; }
+:root {
+  --bg: #0f1410;
+  --card: rgba(30, 50, 30, 0.6);
+  --accent: #4cff88;
+  --text: #d2ffd2;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: radial-gradient(circle at top, #1a2a1a, #0f1410);
+  color: var(--text);
+}
+
+/* HEADER */
+header {
+  text-align: center;
+  padding: 40px 20px 20px;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 2.2em;
+  color: var(--accent);
+  text-shadow: 0 0 10px #4cff8855;
+}
+
+/* SECTION */
+section {
+  max-width: 1000px;
+  margin: auto;
+  padding: 20px;
+}
+
+/* SEARCH */
+.search {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  font-size: 1em;
+  margin-bottom: 20px;
+  background: #1c2a1c;
+  color: white;
+}
+
+/* GRID */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 15px;
+}
+
+/* CARD */
+.card {
+  padding: 15px;
+  border-radius: 15px;
+  background: var(--card);
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  transition: 0.3s;
+  text-align: center;
+  font-weight: bold;
+  border: 1px solid rgba(100,255,150,0.1);
+}
+
+.card:hover {
+  transform: translateY(-5px) scale(1.03);
+  background: rgba(50, 80, 50, 0.8);
+  box-shadow: 0 0 15px #4cff8855;
+}
+
+/* FOOTER */
+footer {
+  text-align: center;
+  padding: 20px;
+  opacity: 0.6;
+  font-size: 0.9em;
+}
 </style>
 </head>
+
 <body>
 
 <header>
-<h1>Moja Strona 🌿</h1>
+  <h1>🌿 Przepisy</h1>
 </header>
 
 <section>
-<h2>Przepisy 🍲</h2>
-<input type="text" id="search" class="search-box" placeholder="Szukaj przepisu...">
-<div class="cards-container" id="cards-container"></div>
+  <input class="search" id="search" placeholder="Szukaj przepisu...">
+
+  <div class="grid" id="grid"></div>
 </section>
 
-<footer>&copy; 2026 Moja Strona – Wszystko w jednym miejscu!</footer>
+<footer>
+  © 2026 • clean & simple
+</footer>
 
 <script>
 const user = "tymoteuszkwiatek";
 const repo = "tymoteuszkwiatek.github.io";
+
 let releases = [];
 
-// Pobranie release
-async function fetchReleases() {
+async function fetchData() {
   const res = await fetch(`https://api.github.com/repos/${user}/${repo}/releases`);
   releases = await res.json();
-  displayCards(releases);
+  render(releases);
 }
 
-// Tworzenie kart
-function displayCards(list){
-  const container = document.getElementById('cards-container');
-  container.innerHTML = '';
+function render(list){
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+
   list.forEach(rel => {
-    if(rel.tag_name.toLowerCase().includes('przepis')){
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.textContent = rel.name;
-      card.onclick = () => {
+    if(rel.tag_name.toLowerCase().includes("przepis")){
+      const div = document.createElement("div");
+      div.className = "card";
+      div.textContent = rel.name;
+
+      div.onclick = () => {
         window.location.href = `przepis.html?name=${encodeURIComponent(rel.name)}`;
-      }
-      container.appendChild(card);
+      };
+
+      grid.appendChild(div);
     }
   });
 }
 
-// Szukaj
-document.getElementById('search').addEventListener('input', e => {
-  const value = e.target.value.toLowerCase();
-  const filtered = releases.filter(r => r.tag_name.toLowerCase().includes('przepis') && r.name.toLowerCase().includes(value));
-  displayCards(filtered);
+// search
+document.getElementById("search").addEventListener("input", e => {
+  const val = e.target.value.toLowerCase();
+  const filtered = releases.filter(r =>
+    r.tag_name.toLowerCase().includes("przepis") &&
+    r.name.toLowerCase().includes(val)
+  );
+  render(filtered);
 });
 
-fetchReleases();
+fetchData();
 </script>
 
 </body>
