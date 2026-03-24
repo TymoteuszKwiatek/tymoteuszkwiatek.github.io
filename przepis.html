@@ -4,54 +4,99 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Przepis 🌿</title>
+
 <style>
-body { margin:0; font-family:Arial,sans-serif; background:#121a12; color:#c7f0c7; }
-header { background:#1b451b; padding:20px; text-align:center; }
-header h1 { margin:0; color:#7fff7f; }
-section { max-width:900px; margin:20px auto; padding:20px; background:#1c2a1c; border-radius:10px; box-shadow:0 4px 6px rgba(0,0,0,.5); }
-h2 { color:#7fff7f; margin-top:0; }
-.files a { display:inline-block; margin:5px 8px 0 0; padding:5px 10px; background:#3a7d3a; color:white; text-decoration:none; border-radius:5px; font-size:.9em; }
-.back-btn { display:inline-block; margin-top:10px; padding:5px 10px; background:#254225; color:#a0ffa0; text-decoration:none; border-radius:5px; transition:.3s; }
-.back-btn:hover { background:#3a7d3a; }
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: #0f1410;
+  color: #d2ffd2;
+}
+
+header {
+  text-align: center;
+  padding: 30px;
+  color: #4cff88;
+}
+
+section {
+  max-width: 800px;
+  margin: auto;
+  padding: 20px;
+}
+
+.content {
+  background: rgba(30,50,30,0.7);
+  padding: 20px;
+  border-radius: 15px;
+  line-height: 1.6;
+  backdrop-filter: blur(10px);
+}
+
+.files a {
+  display: inline-block;
+  margin: 5px;
+  padding: 6px 12px;
+  background: #2e6b3f;
+  color: white;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+.files a:hover {
+  background: #4cff88;
+  color: black;
+}
+
+.back {
+  display: inline-block;
+  margin-top: 15px;
+  color: #4cff88;
+  text-decoration: none;
+}
 </style>
 </head>
+
 <body>
 
 <header>
-<h1>Przepis 🌿</h1>
+  <h1 id="title">Ładowanie...</h1>
 </header>
 
-<section id="przepis-container">
-<p>Ładowanie przepisu...</p>
+<section>
+  <div class="content" id="content"></div>
 </section>
 
 <script>
 const user = "tymoteuszkwiatek";
 const repo = "tymoteuszkwiatek.github.io";
-const params = new URLSearchParams(window.location.search);
-const name = params.get('name');
 
-async function loadRelease(){
-  const container = document.getElementById("przepis-container");
+const name = new URLSearchParams(window.location.search).get("name");
+
+async function load(){
   const res = await fetch(`https://api.github.com/repos/${user}/${repo}/releases`);
-  const releases = await res.json();
-  const rel = releases.find(r => r.name === name);
+  const data = await res.json();
+
+  const rel = data.find(r => r.name === name);
+
   if(!rel){
-    container.innerHTML = `<p>Nie znaleziono przepisu o nazwie <strong>${name}</strong>.</p>`;
+    document.getElementById("content").innerHTML = "Nie znaleziono.";
     return;
   }
-  container.innerHTML = `
-    <h2>${rel.name}</h2>
-    <p>${rel.body.replace(/\n/g,'<br>')}</p>
+
+  document.getElementById("title").textContent = rel.name;
+
+  document.getElementById("content").innerHTML = `
+    ${rel.body.replace(/\n/g,"<br>")}
     <div class="files">
-      ${rel.assets.map(a => `<a href="${a.browser_download_url}" target="_blank">${a.name}</a>`).join('')}
+      ${rel.assets.map(a => `<a href="${a.browser_download_url}">${a.name}</a>`).join("")}
     </div>
-    <a class="back-btn" href="index.html">← Wróć do listy</a>
+    <a class="back" href="index.html">← Wróć</a>
   `;
 }
 
-if(name) loadRelease();
-else document.getElementById("przepis-container").innerHTML = `<p>Nie podano nazwy przepisu.</p>`;
+load();
 </script>
 
 </body>
