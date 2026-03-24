@@ -5,173 +5,143 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Moja Strona 🌿</title>
 <style>
-  body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #121a12;
-    color: #c7f0c7;
-  }
-  header {
-    background-color: #1b451b;
-    padding: 20px;
-    text-align: center;
-  }
-  header h1 {
-    margin: 0;
-    color: #7fff7f;
-  }
-  nav {
-    display: flex;
-    justify-content: center;
-    background-color: #1a2b1a;
-  }
-  nav a {
-    padding: 14px 20px;
-    color: #c7f0c7;
-    text-decoration: none;
-    transition: 0.3s;
-  }
-  nav a:hover {
-    background-color: #225522;
-  }
-  section {
-    max-width: 900px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: #1c2a1c;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.5);
-    opacity: 0;
-    transform: translateY(20px);
-    transition: all 0.6s ease;
-  }
-  section.show {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  h2 {
-    color: #7fff7f;
-    margin-top: 0;
-  }
-  .release {
-    margin-bottom: 15px;
-    padding: 10px;
-    background-color: #254225;
-    border-radius: 8px;
-  }
-  .release h3 {
-    margin: 0 0 5px 0;
-    color: #a0ffa0;
-  }
-  .release p {
-    margin: 0 0 5px 0;
-  }
-  .files a {
-    display: inline-block;
-    margin-right: 8px;
-    padding: 5px 10px;
-    background-color: #3a7d3a;
-    color: white;
-    text-decoration: none;
-    border-radius: 5px;
-    font-size: 0.9em;
-  }
-  footer {
-    text-align: center;
-    padding: 10px;
-    background-color: #1a2b1a;
-  }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #121a12;
+  color: #c7f0c7;
+}
+header {
+  background-color: #1b451b;
+  padding: 20px;
+  text-align: center;
+}
+header h1 { margin:0; color:#7fff7f; }
+nav { display:flex; justify-content:center; background-color:#1a2b1a; }
+nav a { padding:14px 20px; color:#c7f0c7; text-decoration:none; transition:0.3s; }
+nav a:hover { background-color:#225522; }
+section { max-width:900px; margin:20px auto; padding:20px; background-color:#1c2a1c; border-radius:10px; box-shadow:0 4px 6px rgba(0,0,0,0.5); }
+h2 { color:#7fff7f; margin-top:0; }
+ul { list-style:none; padding:0; }
+li a { display:block; padding:8px 12px; margin-bottom:5px; background:#254225; color:#a0ffa0; border-radius:5px; text-decoration:none; transition:0.3s; }
+li a:hover { background:#3a7d3a; }
+iframe { width:100%; height:600px; border:none; margin-top:10px; border-radius:8px; }
+footer { text-align:center; padding:10px; background-color:#1a2b1a; }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>Moja Strona 🌿</h1>
+<h1>Moja Strona 🌿</h1>
 </header>
 
 <nav>
-  <a href="#przepisy">Przepisy 🍲</a>
-  <a href="#projekty">Projekty 📚</a>
-  <a href="#notatki">Notatki ✏️</a>
+<a href="#przepisy" onclick="showSection('przepisy')">Przepisy 🍲</a>
+<a href="#projekty" onclick="showSection('projekty')">Projekty 📚</a>
+<a href="#notatki" onclick="showSection('notatki')">Notatki ✏️</a>
 </nav>
 
 <section id="przepisy">
-  <h2>Przepisy 🍲</h2>
-  <div id="przepisy-list"></div>
+<h2>Przepisy 🍲</h2>
+<ul id="przepisy-list"></ul>
+<div id="przepis-content"></div>
 </section>
 
-<section id="projekty">
-  <h2>Projekty szkolne 📚</h2>
-  <div id="projekty-list"></div>
+<section id="projekty" style="display:none;">
+<h2>Projekty szkolne 📚</h2>
+<ul id="projekty-list"></ul>
+<div id="projekt-content"></div>
 </section>
 
-<section id="notatki">
-  <h2>Notatki ✏️</h2>
-  <p>Tu możesz pisać swoje notatki i pomysły statycznie.</p>
+<section id="notatki" style="display:none;">
+<h2>Notatki ✏️</h2>
+<p>Tu możesz pisać swoje notatki i pomysły statycznie.</p>
 </section>
 
 <footer>
-  &copy; 2026 Moja Strona – Wszystko w jednym miejscu!
+&copy; 2026 Moja Strona – Wszystko w jednym miejscu!
 </footer>
 
 <script>
 // ==========================
 // Ustawienia GitHub
 // ==========================
-const user = "TymoteuszKwiatek"; // <- wpisz swój login
-const repo = "tymoteuszkwiatek.github.io";           // <- wpisz nazwę repo
+const user = "TWOJ_GITHUB_USERNAME"; // <- wpisz swój login
+const repo = "TWOJE_REPO";           // <- wpisz repo
+
+let releases = [];
 
 // ==========================
-// Pobieranie release
+// Funkcje pobierania release
 // ==========================
 async function fetchReleases() {
-  const url = `https://api.github.com/repos/${user}/${repo}/releases`;
-  const response = await fetch(url);
-  const releases = await response.json();
+  const res = await fetch(`https://api.github.com/repos/${user}/${repo}/releases`);
+  releases = await res.json();
+  populateLists();
+  handleQuery();
+}
 
+// ==========================
+// Wypełnianie list
+// ==========================
+function populateLists() {
   const przepisyList = document.getElementById("przepisy-list");
   const projektyList = document.getElementById("projekty-list");
-
   releases.forEach(rel => {
-    const tags = rel.tag_name.toLowerCase();
-    const container = document.createElement("div");
-    container.className = "release";
-    container.innerHTML = `
+    const tag = rel.tag_name.toLowerCase();
+    const li = document.createElement("li");
+    li.innerHTML = `<a href="?name=${encodeURIComponent(rel.name)}" onclick="openRelease(event,'${rel.name}')">${rel.name}</a>`;
+    if(tag.includes("przepis")) przepisyList.appendChild(li);
+    else if(tag.includes("projekt")) projektyList.appendChild(li);
+  });
+}
+
+// ==========================
+// Pokazywanie release w tym samym miejscu
+// ==========================
+function openRelease(event, name){
+  event.preventDefault();
+  const rel = releases.find(r => r.name === name);
+  if(!rel) return;
+
+  const tag = rel.tag_name.toLowerCase();
+  if(tag.includes("przepis")){
+    document.getElementById("przepis-content").innerHTML = `
       <h3>${rel.name}</h3>
       <p>${rel.body.replace(/\n/g,"<br>")}</p>
-      <div class="files">
-        ${rel.assets.map(a => `<a href="${a.browser_download_url}" target="_blank">${a.name}</a>`).join("")}
-      </div>
+      <div>${rel.assets.map(a=>`<a href="${a.browser_download_url}" target="_blank">${a.name}</a>`).join(' ')}</div>
     `;
+  } else if(tag.includes("projekt")){
+    document.getElementById("projekt-content").innerHTML = `
+      <h3>${rel.name}</h3>
+      <p>${rel.body.replace(/\n/g,"<br>")}</p>
+      <div>${rel.assets.map(a=>`<a href="${a.browser_download_url}" target="_blank">${a.name}</a>`).join(' ')}</div>
+    `;
+  }
 
-    if (tags.includes("przepis")) {
-      przepisyList.appendChild(container);
-    } else if (tags.includes("projekt")) {
-      projektyList.appendChild(container);
-    }
-  });
-
-  animateSections();
+  // jeśli strona w iframe, wszystko zostaje w iframe
+  history.replaceState(null, "", `?name=${encodeURIComponent(name)}`);
 }
 
 // ==========================
-// Prosta animacja przy przewijaniu
+// Pokazywanie sekcji
 // ==========================
-function animateSections() {
-  const sections = document.querySelectorAll("section");
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if(entry.isIntersecting){
-        entry.target.classList.add("show");
-      }
-    });
-  }, {threshold: 0.1});
-
-  sections.forEach(sec => observer.observe(sec));
+function showSection(id){
+  document.querySelectorAll("section").forEach(s=>s.style.display="none");
+  document.getElementById(id).style.display="block";
 }
 
 // ==========================
-// Uruchomienie
+// Obsługa query string
+// ==========================
+function handleQuery(){
+  const params = new URLSearchParams(window.location.search);
+  const name = params.get("name");
+  if(name) openRelease(new Event('click'), name);
+}
+
+// ==========================
+// Start
 // ==========================
 fetchReleases();
 </script>
