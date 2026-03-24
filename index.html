@@ -5,28 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Moja Strona 🌿</title>
 <style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background-color: #121a12;
-  color: #c7f0c7;
-}
-header {
-  background-color: #1b451b;
-  padding: 20px;
-  text-align: center;
-}
+body { margin:0; font-family:Arial,sans-serif; background:#121a12; color:#c7f0c7; }
+header { background:#1b451b; padding:20px; text-align:center; }
 header h1 { margin:0; color:#7fff7f; }
-nav { display:flex; justify-content:center; background-color:#1a2b1a; }
-nav a { padding:14px 20px; color:#c7f0c7; text-decoration:none; transition:0.3s; }
-nav a:hover { background-color:#225522; }
-section { max-width:900px; margin:20px auto; padding:20px; background-color:#1c2a1c; border-radius:10px; box-shadow:0 4px 6px rgba(0,0,0,0.5); }
+nav { display:flex; justify-content:center; background:#1a2b1a; padding:5px; }
+nav a { padding:10px 15px; color:#c7f0c7; text-decoration:none; transition:.3s; }
+nav a:hover { background:#225522; }
+section { max-width:900px; margin:20px auto; padding:20px; background:#1c2a1c; border-radius:10px; box-shadow:0 4px 6px rgba(0,0,0,.5); }
 h2 { color:#7fff7f; margin-top:0; }
-ul { list-style:none; padding:0; }
-li a { display:block; padding:8px 12px; margin-bottom:5px; background:#254225; color:#a0ffa0; border-radius:5px; text-decoration:none; transition:0.3s; }
-li a:hover { background:#3a7d3a; }
-iframe { width:100%; height:600px; border:none; margin-top:10px; border-radius:8px; }
-footer { text-align:center; padding:10px; background-color:#1a2b1a; }
+.cards-container { display:flex; overflow-x:auto; gap:10px; padding-bottom:10px; }
+.card { flex:0 0 auto; padding:10px 15px; background:#254225; border-radius:8px; cursor:pointer; color:#a0ffa0; transition:.3s; white-space:nowrap; }
+.card:hover { background:#3a7d3a; }
+.search-box { width:100%; padding:8px; margin-bottom:15px; border-radius:5px; border:none; font-size:1em; }
+footer { text-align:center; padding:10px; background:#1a2b1a; }
 </style>
 </head>
 <body>
@@ -35,114 +26,50 @@ footer { text-align:center; padding:10px; background-color:#1a2b1a; }
 <h1>Moja Strona 🌿</h1>
 </header>
 
-<nav>
-<a href="#przepisy" onclick="showSection('przepisy')">Przepisy 🍲</a>
-<a href="#projekty" onclick="showSection('projekty')">Projekty 📚</a>
-<a href="#notatki" onclick="showSection('notatki')">Notatki ✏️</a>
-</nav>
-
-<section id="przepisy">
+<section>
 <h2>Przepisy 🍲</h2>
-<ul id="przepisy-list"></ul>
-<div id="przepis-content"></div>
+<input type="text" id="search" class="search-box" placeholder="Szukaj przepisu...">
+<div class="cards-container" id="cards-container"></div>
 </section>
 
-<section id="projekty" style="display:none;">
-<h2>Projekty szkolne 📚</h2>
-<ul id="projekty-list"></ul>
-<div id="projekt-content"></div>
-</section>
-
-<section id="notatki" style="display:none;">
-<h2>Notatki ✏️</h2>
-<p>Tu możesz pisać swoje notatki i pomysły statycznie.</p>
-</section>
-
-<footer>
-&copy; 2026 Moja Strona – Wszystko w jednym miejscu!
-</footer>
+<footer>&copy; 2026 Moja Strona – Wszystko w jednym miejscu!</footer>
 
 <script>
-// ==========================
-// Ustawienia GitHub
-// ==========================
-const user = "TymoteuszKwiatek"; // <- wpisz swój login
-const repo = "tymoteuszkwiatek.github.io";           // <- wpisz repo
-
+const user = "tymoteuszkwiatek";
+const repo = "tymoteuszkwiatek.github.io";
 let releases = [];
 
-// ==========================
-// Funkcje pobierania release
-// ==========================
+// Pobranie release
 async function fetchReleases() {
   const res = await fetch(`https://api.github.com/repos/${user}/${repo}/releases`);
   releases = await res.json();
-  populateLists();
-  handleQuery();
+  displayCards(releases);
 }
 
-// ==========================
-// Wypełnianie list
-// ==========================
-function populateLists() {
-  const przepisyList = document.getElementById("przepisy-list");
-  const projektyList = document.getElementById("projekty-list");
-  releases.forEach(rel => {
-    const tag = rel.tag_name.toLowerCase();
-    const li = document.createElement("li");
-    li.innerHTML = `<a href="?name=${encodeURIComponent(rel.name)}" onclick="openRelease(event,'${rel.name}')">${rel.name}</a>`;
-    if(tag.includes("przepis")) przepisyList.appendChild(li);
-    else if(tag.includes("projekt")) projektyList.appendChild(li);
+// Tworzenie kart
+function displayCards(list){
+  const container = document.getElementById('cards-container');
+  container.innerHTML = '';
+  list.forEach(rel => {
+    if(rel.tag_name.toLowerCase().includes('przepis')){
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.textContent = rel.name;
+      card.onclick = () => {
+        window.location.href = `przepis.html?name=${encodeURIComponent(rel.name)}`;
+      }
+      container.appendChild(card);
+    }
   });
 }
 
-// ==========================
-// Pokazywanie release w tym samym miejscu
-// ==========================
-function openRelease(event, name){
-  event.preventDefault();
-  const rel = releases.find(r => r.name === name);
-  if(!rel) return;
+// Szukaj
+document.getElementById('search').addEventListener('input', e => {
+  const value = e.target.value.toLowerCase();
+  const filtered = releases.filter(r => r.tag_name.toLowerCase().includes('przepis') && r.name.toLowerCase().includes(value));
+  displayCards(filtered);
+});
 
-  const tag = rel.tag_name.toLowerCase();
-  if(tag.includes("przepis")){
-    document.getElementById("przepis-content").innerHTML = `
-      <h3>${rel.name}</h3>
-      <p>${rel.body.replace(/\n/g,"<br>")}</p>
-      <div>${rel.assets.map(a=>`<a href="${a.browser_download_url}" target="_blank">${a.name}</a>`).join(' ')}</div>
-    `;
-  } else if(tag.includes("projekt")){
-    document.getElementById("projekt-content").innerHTML = `
-      <h3>${rel.name}</h3>
-      <p>${rel.body.replace(/\n/g,"<br>")}</p>
-      <div>${rel.assets.map(a=>`<a href="${a.browser_download_url}" target="_blank">${a.name}</a>`).join(' ')}</div>
-    `;
-  }
-
-  // jeśli strona w iframe, wszystko zostaje w iframe
-  history.replaceState(null, "", `przepis?name=${encodeURIComponent(name)}`);
-}
-
-// ==========================
-// Pokazywanie sekcji
-// ==========================
-function showSection(id){
-  document.querySelectorAll("section").forEach(s=>s.style.display="none");
-  document.getElementById(id).style.display="block";
-}
-
-// ==========================
-// Obsługa query string
-// ==========================
-function handleQuery(){
-  const params = new URLSearchParams(window.location.search);
-  const name = params.get("name");
-  if(name) openRelease(new Event('click'), name);
-}
-
-// ==========================
-// Start
-// ==========================
 fetchReleases();
 </script>
 
