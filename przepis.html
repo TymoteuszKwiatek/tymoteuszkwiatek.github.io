@@ -5,37 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Przepis 🌿</title>
 <style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background-color: #121a12;
-  color: #c7f0c7;
-}
-header {
-  background-color: #1b451b;
-  padding: 20px;
-  text-align: center;
-}
+body { margin:0; font-family:Arial,sans-serif; background:#121a12; color:#c7f0c7; }
+header { background:#1b451b; padding:20px; text-align:center; }
 header h1 { margin:0; color:#7fff7f; }
-section {
-  max-width:900px;
-  margin:20px auto;
-  padding:20px;
-  background-color:#1c2a1c;
-  border-radius:10px;
-  box-shadow:0 4px 6px rgba(0,0,0,0.5);
-}
+section { max-width:900px; margin:20px auto; padding:20px; background:#1c2a1c; border-radius:10px; box-shadow:0 4px 6px rgba(0,0,0,.5); }
 h2 { color:#7fff7f; margin-top:0; }
-.files a {
-  display:inline-block;
-  margin:5px 8px 0 0;
-  padding:5px 10px;
-  background-color:#3a7d3a;
-  color:white;
-  text-decoration:none;
-  border-radius:5px;
-  font-size:0.9em;
-}
+.files a { display:inline-block; margin:5px 8px 0 0; padding:5px 10px; background:#3a7d3a; color:white; text-decoration:none; border-radius:5px; font-size:.9em; }
+.back-btn { display:inline-block; margin-top:10px; padding:5px 10px; background:#254225; color:#a0ffa0; text-decoration:none; border-radius:5px; transition:.3s; }
+.back-btn:hover { background:#3a7d3a; }
 </style>
 </head>
 <body>
@@ -49,46 +26,32 @@ h2 { color:#7fff7f; margin-top:0; }
 </section>
 
 <script>
-// ==========================
-// Ustawienia GitHub
-// ==========================
-const user = "TymoteuszKwiatek"; // <- wpisz swój login
-const repo = "tymoteuszkwiatek.github.io";           // <- wpisz repo
-
-// ==========================
-// Pobieranie parametru name
-// ==========================
+const user = "tymoteuszkwiatek";
+const repo = "tymoteuszkwiatek.github.io";
 const params = new URLSearchParams(window.location.search);
-const name = params.get("name");
+const name = params.get('name');
 
-// ==========================
-// Pobranie release z GitHub
-// ==========================
 async function loadRelease(){
   const container = document.getElementById("przepis-container");
   const res = await fetch(`https://api.github.com/repos/${user}/${repo}/releases`);
   const releases = await res.json();
   const rel = releases.find(r => r.name === name);
-
   if(!rel){
     container.innerHTML = `<p>Nie znaleziono przepisu o nazwie <strong>${name}</strong>.</p>`;
     return;
   }
-
   container.innerHTML = `
     <h2>${rel.name}</h2>
-    <p>${rel.body.replace(/\n/g,"<br>")}</p>
+    <p>${rel.body.replace(/\n/g,'<br>')}</p>
     <div class="files">
       ${rel.assets.map(a => `<a href="${a.browser_download_url}" target="_blank">${a.name}</a>`).join('')}
     </div>
+    <a class="back-btn" href="index.html">← Wróć do listy</a>
   `;
 }
 
-if(name){
-  loadRelease();
-}else{
-  document.getElementById("przepis-container").innerHTML = `<p>Nie podano nazwy przepisu.</p>`;
-}
+if(name) loadRelease();
+else document.getElementById("przepis-container").innerHTML = `<p>Nie podano nazwy przepisu.</p>`;
 </script>
 
 </body>
