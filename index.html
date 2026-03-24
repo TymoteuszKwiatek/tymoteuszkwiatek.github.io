@@ -1,85 +1,180 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Moja Strona</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f0f0f5;
-    }
-    header {
-      background: #4a90e2;
-      color: white;
-      padding: 20px;
-      text-align: center;
-    }
-    nav {
-      display: flex;
-      justify-content: center;
-      background: #333;
-    }
-    nav a {
-      color: white;
-      padding: 14px 20px;
-      text-decoration: none;
-      text-align: center;
-    }
-    nav a:hover {
-      background: #555;
-    }
-    section {
-      padding: 20px;
-      margin: 10px auto;
-      max-width: 900px;
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    }
-    h2 {
-      color: #4a90e2;
-    }
-    footer {
-      text-align: center;
-      padding: 10px;
-      background: #333;
-      color: white;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moja Strona 🌿</title>
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #121a12;
+    color: #c7f0c7;
+  }
+  header {
+    background-color: #1b451b;
+    padding: 20px;
+    text-align: center;
+  }
+  header h1 {
+    margin: 0;
+    color: #7fff7f;
+  }
+  nav {
+    display: flex;
+    justify-content: center;
+    background-color: #1a2b1a;
+  }
+  nav a {
+    padding: 14px 20px;
+    color: #c7f0c7;
+    text-decoration: none;
+    transition: 0.3s;
+  }
+  nav a:hover {
+    background-color: #225522;
+  }
+  section {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #1c2a1c;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s ease;
+  }
+  section.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  h2 {
+    color: #7fff7f;
+    margin-top: 0;
+  }
+  .release {
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #254225;
+    border-radius: 8px;
+  }
+  .release h3 {
+    margin: 0 0 5px 0;
+    color: #a0ffa0;
+  }
+  .release p {
+    margin: 0 0 5px 0;
+  }
+  .files a {
+    display: inline-block;
+    margin-right: 8px;
+    padding: 5px 10px;
+    background-color: #3a7d3a;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 0.9em;
+  }
+  footer {
+    text-align: center;
+    padding: 10px;
+    background-color: #1a2b1a;
+  }
+</style>
 </head>
 <body>
 
-  <header>
-    <h1>Witaj na mojej stronie! 🌟</h1>
-  </header>
+<header>
+  <h1>Moja Strona 🌿</h1>
+</header>
 
-  <nav>
-    <a href="#przepisy">Przepisy</a>
-    <a href="#projekty">Projekty szkolne</a>
-    <a href="#notatki">Notatki</a>
-  </nav>
+<nav>
+  <a href="#przepisy">Przepisy 🍲</a>
+  <a href="#projekty">Projekty 📚</a>
+  <a href="#notatki">Notatki ✏️</a>
+</nav>
 
-  <section id="przepisy">
-    <h2>Przepisy 🍲</h2>
-    <p>Tu możesz dodawać swoje ulubione przepisy. Na przykład: Spaghetti, pizza, ciasta...</p>
-  </section>
+<section id="przepisy">
+  <h2>Przepisy 🍲</h2>
+  <div id="przepisy-list"></div>
+</section>
 
-  <section id="projekty">
-    <h2>Projekty szkolne 📚</h2>
-    <p>W tym miejscu możesz umieszczać swoje projekty, prezentacje lub zadania.</p>
-  </section>
+<section id="projekty">
+  <h2>Projekty szkolne 📚</h2>
+  <div id="projekty-list"></div>
+</section>
 
-  <section id="notatki">
-    <h2>Notatki i pomysły ✏️</h2>
-    <p>Tu możesz pisać notatki lub pomysły na nowe projekty i przepisy.</p>
-  </section>
+<section id="notatki">
+  <h2>Notatki ✏️</h2>
+  <p>Tu możesz pisać swoje notatki i pomysły statycznie.</p>
+</section>
 
-  <footer>
-    &copy; 2026 Moja Strona – Wszystko w jednym miejscu!
-  </footer>
+<footer>
+  &copy; 2026 Moja Strona – Wszystko w jednym miejscu!
+</footer>
+
+<script>
+// ==========================
+// Ustawienia GitHub
+// ==========================
+const user = "TymoteuszKwiatek"; // <- wpisz swój login
+const repo = "tymoteuszkwiatek.github.io";           // <- wpisz nazwę repo
+
+// ==========================
+// Pobieranie release
+// ==========================
+async function fetchReleases() {
+  const url = `https://api.github.com/repos/${user}/${repo}/releases`;
+  const response = await fetch(url);
+  const releases = await response.json();
+
+  const przepisyList = document.getElementById("przepisy-list");
+  const projektyList = document.getElementById("projekty-list");
+
+  releases.forEach(rel => {
+    const tags = rel.tag_name.toLowerCase();
+    const container = document.createElement("div");
+    container.className = "release";
+    container.innerHTML = `
+      <h3>${rel.name}</h3>
+      <p>${rel.body.replace(/\n/g,"<br>")}</p>
+      <div class="files">
+        ${rel.assets.map(a => `<a href="${a.browser_download_url}" target="_blank">${a.name}</a>`).join("")}
+      </div>
+    `;
+
+    if (tags.includes("przepis")) {
+      przepisyList.appendChild(container);
+    } else if (tags.includes("projekt")) {
+      projektyList.appendChild(container);
+    }
+  });
+
+  animateSections();
+}
+
+// ==========================
+// Prosta animacja przy przewijaniu
+// ==========================
+function animateSections() {
+  const sections = document.querySelectorAll("section");
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        entry.target.classList.add("show");
+      }
+    });
+  }, {threshold: 0.1});
+
+  sections.forEach(sec => observer.observe(sec));
+}
+
+// ==========================
+// Uruchomienie
+// ==========================
+fetchReleases();
+</script>
 
 </body>
-</html> 
+</html>
